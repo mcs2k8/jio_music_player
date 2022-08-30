@@ -1,0 +1,10 @@
+{
+    "helloWorld": "Hello World!",
+    "@helloWorld": {
+      "description": "The conventional newborn programmer greeting"
+    },
+    "appTitle": "Jio Music",
+    "@appTitle": {
+       "description": "App name"
+    }
+}
