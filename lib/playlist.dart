@@ -2,12 +2,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:music_player/player_manager.dart';
+import 'package:music_player/managers/player_manager.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
-class Playlist extends StatelessWidget {
+class PlaylistDeprecated extends StatelessWidget {
   final PlayerManager _pageManager;
 
-  Playlist(this._pageManager);
+  PlaylistDeprecated(this._pageManager);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class Playlist extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-              child: ValueListenableBuilder<List<MediaItem>>(
+              child: ValueListenableBuilder<List<AudioModel>>(
                 valueListenable: _pageManager.playlistNotifier,
                 builder: (context, playlistTitles, _) {
                   return ListView.builder(
