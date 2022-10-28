@@ -18,7 +18,6 @@ class AlbumDetailsScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(child: MiniSongListWidget(
-            themeNotifier: ThemeManager.instance.themeNotifier,
             album: album.id.toString(),
           )),
           PlayerStripe(themeNotifier: ThemeManager.instance.themeNotifier,)

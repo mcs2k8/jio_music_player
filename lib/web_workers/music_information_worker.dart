@@ -27,7 +27,7 @@ class MusicInformationWorker {
         var json = jsonDecode(response.body);
         String? image = json['artistbackground']?[0]?['url'] ?? json['musicbanner']?[0]?['url'] ;
         if (image != null){
-          print(image);
+          //print(image);
           artistPhotoNotifier.value = image;
         }
       }else{

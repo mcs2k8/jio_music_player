@@ -12,6 +12,12 @@ class Playlist {
     playSequence = songs.asMap().keys.toList();
   }
 
+  void setNewSongs({required List<AudioModel> songs, int currentIndex = 0}) {
+    this.songs = songs;
+    playSequence = songs.asMap().keys.toList();
+    this.currentIndex = currentIndex;
+  }
+
   void shuffle(){
     int currentSongId = playSequence.removeAt(currentIndex);
     playSequence.shuffle();
@@ -39,8 +45,8 @@ class Playlist {
     }
   }
 
-  AudioModel getCurrentSong() {
-    return songs[playSequence[currentIndex]];
+  AudioModel? getCurrentSong() {
+    return songs.isNotEmpty ? songs[playSequence[currentIndex]] : null;
   }
 
   int getCurrentIndex() {

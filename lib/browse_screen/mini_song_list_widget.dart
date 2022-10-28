@@ -5,15 +5,17 @@ import 'package:music_player/managers/theme_manager.dart';
 import 'package:music_player/notifiers/current_song_state.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import 'edit_song_list_screen.dart';
+import 'list_tiles.dart';
+
 class MiniSongListWidget extends StatefulWidget {
-  final ThemeNotifier themeNotifier;
   final String? artist;
   final String? album;
   final List<AudioModel>? songs;
+  final bool isPlaylist;
+  final int playlistKey;
 
-  const MiniSongListWidget(
-      {Key? key,
-        required ThemeNotifier this.themeNotifier, this.artist, this.album, this.songs})
+  MiniSongListWidget({Key? key, this.artist, this.album, this.songs, this.isPlaylist = false, this.playlistKey = -1})
       : super(key: key);
 
   @override
@@ -28,161 +30,131 @@ class _MiniSongListWidgetState extends State<MiniSongListWidget> {
   void initState() {
     super.initState();
     _songListManager = LocalSongManager.instance;
-    _themeNotifier = widget.themeNotifier;
-    if (widget.artist != null || widget.album != null){
+    _themeNotifier = ThemeManager.instance.themeNotifier;
+    if (widget.artist != null || widget.album != null) {
       _songListManager.searchSongs(widget.artist, widget.album);
     }
+  }
+
+  @override
+  void dispose() {
+    LocalSongManager.instance.miniSongListNotifier.value = SearchResultsState([], [], []);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: widget.songs != null ?
-                TextButton(
-                    onPressed: () {
-                      PlayerManager.instance.playSongList(widget.songs!, 0);
-                    },
-                    style: TextButton.styleFrom(
-                      primary: _themeNotifier.value.lightMutedColor,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.play_circle_rounded),
-                        const Padding(padding: EdgeInsets.all(2.0)),
-                        Text('Play all (${widget.songs!.length})')
-                      ],
-                    ))
-                    : ValueListenableBuilder<List<AudioModel>>(
-                  valueListenable: _songListManager.miniSongListNotifier,
-                  builder: (_, list, __){
-                    return TextButton(
-                        onPressed: () {
-                          PlayerManager.instance.playSongList(list, 0);
-                        },
-                        style: TextButton.styleFrom(
-                          primary: _themeNotifier.value.lightMutedColor,
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.play_circle_rounded),
-                            const Padding(padding: EdgeInsets.all(2.0)),
-                            Text('Play all (${list.length})')
-                          ],
-                        ));
-                  },
-                ),
-              ),
-              IconButton(onPressed: () {}, icon: Icon(Icons.checklist))
-            ],
-          ),
-          Expanded(
-              child: widget.songs != null ?
-              Material(
-                clipBehavior: Clip.hardEdge,
-                color: Colors.transparent,
-                child: ListView.separated(
-                  itemCount: widget.songs!.length,
-                  itemBuilder: (context, index) {
-                    return ValueListenableBuilder<CurrentSongState>(valueListenable: PlayerManager.instance.currentSongNotifier, builder: (_, currentSongState, __){
-                      AudioModel? currentSong = currentSongState.song;
-                      return ListTile(
-                        tileColor: currentSong?.uri == widget.songs![index].uri ? _themeNotifier.value.mutedColor : _themeNotifier.value.darkMutedColor,
-                        onTap: () {
-                          PlayerManager.instance.playSongList(widget.songs!, index);
-                        },
-                        title: Text(
-                          widget.songs![index].title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Row(
-                          children: [
-                            Icon(
-                              Icons.phone_android_rounded,
-                              size: 16,
-                              color: _themeNotifier.value.lightMutedColor,
-                            ),
-                            const Padding(padding: EdgeInsets.all(4.0)),
-                            Expanded(
-                                child: Text(
-                                  '${widget.songs![index].artist ?? "Unknown Artist"} - ${widget.songs![index].album ?? "Unknown Album"}',
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                ))
-                          ],
-                        ),
-                        trailing: IconButton(
-                            color: _themeNotifier.value.lightMutedColor,
-                            onPressed: () {},
-                            icon: const Icon(Icons.more_horiz)),
-                      );
+      child: ValueListenableBuilder<SearchResultsState>(
+          valueListenable: _songListManager.miniSongListNotifier,
+          builder: (_, searchResultsState, __) {
+            //build list here first
+            List<Widget> listView = [];
+            if (widget.songs != null){
+              widget.songs!.removeWhere((element) => LocalSongManager.instance.songIdsToRemove.contains(element.id));
+              for (AudioModel i in widget.songs! ){
+                int index = widget.songs!.indexOf(i);
+                listView.add(ValueListenableBuilder<CurrentSongState>(
+                    valueListenable: PlayerManager
+                        .instance.currentSongNotifier,
+                    builder: (_, currentSongState, __) {
+                      AudioModel? currentSong =
+                          currentSongState.song;
+                      return SongTile(
+                          currentSong, widget.songs![index],
+                              () {
+                            PlayerManager.instance.playSongList(
+                                widget.songs!, index,
+                                needsReloadOfSongs: true);
+                          }, () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    EditSongListScreen(
+                                      songs: widget.songs!,
+                                      selectedIndexes: {index},
+                                      isPlaylistEdit: widget.isPlaylist,
+                                      playlistKey: widget.playlistKey,
+                                    )));
+                      });
+                    }));
+              }
+            }
+            for (AudioModel i in searchResultsState.songs){
+              int index = searchResultsState.songs.indexOf(i);
+              listView.add(ValueListenableBuilder<CurrentSongState>(
+                  valueListenable: PlayerManager
+                      .instance.currentSongNotifier,
+                  builder: (_, currentSongState, __) {
+                    AudioModel? currentSong =
+                        currentSongState.song;
+                    return SongTile(
+                        currentSong, searchResultsState.songs[index],
+                            () {
+                          PlayerManager.instance.playSongList(
+                              searchResultsState.songs, index,
+                              needsReloadOfSongs: true);
+                        }, () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  EditSongListScreen(
+                                    songs: searchResultsState
+                                        .songs,
+                                    selectedIndexes: {index},
+                                    isPlaylistEdit: widget.isPlaylist,
+                                    playlistKey: widget.playlistKey,
+                                  )));
                     });
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return const Divider();
-                  },
+                  }));
+            }
+            for (ArtistModel i in searchResultsState.artists){
+              listView.add(ArtistTile(i));
+            }
+            for (AlbumModel i in searchResultsState.albums){
+              listView.add(AlbumTile(i));
+            }
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                        child: TextButton(
+                            onPressed: () {
+                              PlayerManager.instance.playSongList(
+                                  widget.songs ?? searchResultsState.songs, 0,
+                                  needsReloadOfSongs: true);
+                            },
+                            style: TextButton.styleFrom(
+                              primary: _themeNotifier.value.lightMutedColor,
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.play_circle_rounded),
+                                const Padding(padding: EdgeInsets.all(2.0)),
+                                Text(
+                                    'Play all (${widget.songs?.length ?? searchResultsState.songs.length})')
+                              ],
+                            ))),
+                    IconButton(onPressed: () {}, icon: Icon(Icons.checklist))
+                  ],
                 ),
-              )
-                  : ValueListenableBuilder<List<AudioModel>>(
-                  valueListenable: _songListManager.miniSongListNotifier,
-                  builder: (_, list, __) {
-                    //convert items to format for AZList
-                    return Material(
-                      clipBehavior: Clip.hardEdge,
-                      color: Colors.transparent,
-                      child: ListView.separated(
-                        itemCount: list.length,
-                        itemBuilder: (context, index) {
-                          return ValueListenableBuilder<CurrentSongState>(valueListenable: PlayerManager.instance.currentSongNotifier, builder: (_, currentSongState, __){
-                            AudioModel? currentSong = currentSongState.song;
-                            return ListTile(
-                              tileColor: currentSong?.uri == list[index].uri ? _themeNotifier.value.mutedColor : _themeNotifier.value.darkMutedColor,
-                              onTap: () {
-                                PlayerManager.instance.playSongList(list, index);
-                              },
-                              title: Text(
-                                list[index].title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              subtitle: Row(
-                                children: [
-                                  Icon(
-                                    Icons.phone_android_rounded,
-                                    size: 16,
-                                    color: _themeNotifier.value.lightMutedColor,
-                                  ),
-                                  const Padding(padding: EdgeInsets.all(4.0)),
-                                  Expanded(
-                                      child: Text(
-                                        '${list[index].artist ?? "Unknown Artist"} - ${list[index].album ?? "Unknown Album"}',
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ))
-                                ],
-                              ),
-                              trailing: IconButton(
-                                  color: _themeNotifier.value.lightMutedColor,
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.more_horiz)),
-                            );
-                          });
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return const Divider();
-                        },
-                      ),
-                    );
-                  }))
-        ],
-      ),
+                Expanded(
+                    child: Material(
+                            clipBehavior: Clip.hardEdge,
+                            color: Colors.transparent,
+                            child: ListView(
+                              children: listView,
+                            ),
+                          )
+                        )
+              ],
+            );
+          }),
     );
   }
 }

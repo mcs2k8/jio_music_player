@@ -6,6 +6,8 @@ import 'package:music_player/managers/song_list_manager.dart';
 import 'package:music_player/managers/theme_manager.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import 'list_tiles.dart';
+
 class ArtistListWidget extends StatefulWidget {
 
   const ArtistListWidget(
@@ -75,34 +77,7 @@ class _ArtistListWidgetState extends State<ArtistListWidget> {
                       data: items,
                       itemCount: list.length,
                       itemBuilder: (context, index) {
-                        int amountOfTracks = list[index].numberOfTracks ?? 0;
-                        return ListTile(
-                          leading: ClipOval(
-                            child: SizedBox.fromSize(
-                              size: const Size.fromRadius(25), // Image radius
-                              child: list[index] != null && list[index].id != null ? QueryArtworkWidget(
-                                type: ArtworkType.ARTIST,
-                                id: list[index].id,
-                                nullArtworkWidget: Image.asset('assets/vinyl.png'),
-                              ) : Image.asset('assets/vinyl.png'),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context){
-                              return ArtistDetailsScreen(artist: list[index], themeNotifier: _themeNotifier,);
-                            }));
-                          },
-                          title: Text(
-                            list[index].artist,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          subtitle: Text(
-                            '$amountOfTracks song${amountOfTracks > 1 ? "s" : ""}',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        );
+                        return ArtistTile(list[index]);
                       },
                       // separatorBuilder: (BuildContext context, int index) {
                       //   return const Divider();

@@ -34,7 +34,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   audio_video_progress_bar: ^0.10.0
   palette_generator: ^0.3.3+1
-  just_audio: ^0.9.28
+  just_audio:
+    path: ../../Documents/GitHub/just_audio/just_audio
   on_audio_query: 3.0.0-beta.0
   just_audio_background: ^0.0.1-beta.7
   azlistview: ^2.0.0
@@ -45,14 +46,26 @@ dependencies:
   wave: ^0.2.2
   marquee: ^2.2.3
   shared_preferences: ^2.0.15
-  isar: ^2.5.0
-  isar_flutter_libs: ^2.5.0
+  isar: ^3.0.0
+  isar_flutter_libs: ^3.0.0
   scrollable_positioned_list: ^0.2.3
+  syncfusion_flutter_sliders: ^20.2.48
+  fluttertoast: ^8.0.9
+  audio_session: ^0.1.10
+  audio_service: ^0.18.7
+  google_fonts: ^3.0.1
+  settings_ui: ^2.0.2
+  flutter_reaction_button: ^2.0.1+2
+  flutter_feed_reaction: ^0.0.4
+  path_provider: ^2.0.11
+  uri_to_file: ^0.2.0
+  equatable: ^2.0.3
+  mixin_logger: ^0.0.1
 
 flutter_native_splash:
-  color: "#31587F"
-  image: assets/back.png
-  branding: assets/splash.png
+#  color: "#31587F"
+  background_image: "assets/back2.png"
+  image: assets/splash4.png
 
 dev_dependencies:
   flutter_test:
@@ -64,7 +77,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  isar_generator: ^2.5.0
+  isar_generator: ^3.0.0
   build_runner: any
 
 # For information on the generic Dart part of this file, see the
@@ -81,10 +94,10 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/vinyl.png
-    - assets/splash.png
-    - assets/needle.png
-    - assets/back.png
+    - assets/
+    - images/
+    - google_fonts/
+
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

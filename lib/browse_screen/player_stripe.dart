@@ -5,9 +5,12 @@ import 'package:music_player/notifiers/current_song_state.dart';
 import 'package:music_player/player_screen/player.dart';
 import 'package:music_player/managers/player_manager.dart';
 import 'package:music_player/managers/theme_manager.dart';
+import 'package:music_player/widgets/artwork_widget.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:on_audio_room/details/rooms/playlists/playlist_entity.dart';
 
 import '../playlist.dart';
+import '../settings_screen/settings_screen.dart';
 
 class PlayerStripe extends StatefulWidget {
   const PlayerStripe({Key? key, required this.themeNotifier}) : super(key: key);
@@ -28,7 +31,10 @@ class _PlayerStripeState extends State<PlayerStripe> {
             context,
             PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    PlayerPage(playerManager: _playerManager, themeNotifier: widget.themeNotifier,),
+                    PlayerPage(
+                      playerManager: _playerManager,
+                      themeNotifier: widget.themeNotifier,
+                    ),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   const begin = Offset(0.0, 1.0);
@@ -52,114 +58,138 @@ class _PlayerStripeState extends State<PlayerStripe> {
         builder: (_, currentSongState, ___) {
           AudioModel? currentSong = currentSongState.song;
           return Container(
-              height: 70,
-              color: widget.themeNotifier.value.darkVibrantColor,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Padding(padding: EdgeInsets.all(4.0)),
-                  ClipOval(
-                    child: SizedBox.fromSize(
-                      size: const Size.fromRadius(25), // Image radius
-                      child: QueryArtworkWidget(
-                        id: currentSong?.id ?? 0,
-                        type: ArtworkType.AUDIO,
-                        nullArtworkWidget: QueryArtworkWidget(
-                          id: currentSong?.albumId ?? 0,
-                          type: ArtworkType.ALBUM,
-                          nullArtworkWidget: currentSong != null && currentSong.artistId != null  ? QueryArtworkWidget(
-                            id: currentSong.artistId!,
-                            type: ArtworkType.ARTIST,
-                            nullArtworkWidget: Image.asset('assets/vinyl.png'),
-                          ) : Image.asset('assets/vinyl.png'),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const Padding(padding: EdgeInsets.all(4.0)),
-                  Expanded(
-                      child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+            decoration: BoxDecoration(color: lighten(widget.themeNotifier.value.darkMutedColor, 20), boxShadow: [BoxShadow(offset: Offset(0, -1), color: darken(widget.themeNotifier.value.darkMutedColor, 50), blurRadius: 20)]),
+                  height: 70,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        currentSong?.title ?? "None",
-                        style: TextStyle(fontSize: 18.0),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      const Padding(padding: EdgeInsets.all(4.0)),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ArtworkWidget(currentSong, 25.0)
+                          // ClipOval(
+                          //   child: SizedBox.fromSize(
+                          //     size: const Size.fromRadius(25),
+                          //     child: PlayerModel(),
+                          //   ),
+                          // ),
+                          // ClipOval(
+                          //   child: SizedBox.fromSize(
+                          //     size: const Size.fromRadius(25), // Image radius
+                          //     child: QueryArtworkWidget(
+                          //       id: currentSong?.id ?? 0,
+                          //       type: ArtworkType.AUDIO,
+                          //       nullArtworkWidget: QueryArtworkWidget(
+                          //         id: currentSong?.albumId ?? 0,
+                          //         type: ArtworkType.ALBUM,
+                          //         nullArtworkWidget: currentSong != null &&
+                          //                 currentSong.artistId != null
+                          //             ? QueryArtworkWidget(
+                          //                 id: currentSong.artistId!,
+                          //                 type: ArtworkType.ARTIST,
+                          //                 nullArtworkWidget:
+                          //                     Image.asset('assets/vinyl.png'),
+                          //               )
+                          //             : Image.asset('assets/vinyl.png'),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // )
+                        ],
                       ),
-                      const Padding(padding: EdgeInsets.all(2.0)),
-                      Text(
-                        currentSong?.artist ?? "None",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      const Padding(padding: EdgeInsets.all(4.0)),
+                      Expanded(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            currentSong?.title ?? "None",
+                            style: TextStyle(fontSize: 18.0),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const Padding(padding: EdgeInsets.all(2.0)),
+                          Text(
+                            currentSong?.artist ?? "None",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      )),
+                      ValueListenableBuilder<ButtonState>(
+                        valueListenable: PlayerManager.instance.buttonNotifier,
+                        builder: (_, state, __) {
+                          switch (state) {
+                            case ButtonState.paused:
+                              return IconButton(
+                                  onPressed: () {
+                                    _playerManager.play();
+                                  },
+                                  icon: Icon(Icons.play_circle_fill_rounded, size: 35,));
+                            case ButtonState.playing:
+                              return IconButton(
+                                  onPressed: () {
+                                    _playerManager.pause();
+                                  },
+                                  icon:
+                                      Icon(Icons.pause_circle_filled_rounded, size: 35,));
+                            case ButtonState.loading:
+                              return Container(
+                                margin: const EdgeInsets.all(18.0),
+                                width: 20.0,
+                                height: 20.0,
+                                child: CircularProgressIndicator(
+                                  color:
+                                      ThemeNotifier().value.lightVibrantColor,
+                                ),
+                              );
+                          }
+                        },
                       ),
+                      IconButton(
+                          onPressed: () {
+                            if (_playerManager.hasNextSongNotifier.value) {
+                              _playerManager.onNextSongButtonPressed();
+                            }
+                          },
+                          icon: const Icon(Icons.skip_next_rounded, size: 35,)),
+                      IconButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation,
+                                            secondaryAnimation) =>
+                                        PlaylistDetailsScreen(
+                                            playlist: PlaylistEntity(
+                                                0, "Now Playing", 0, 0, []),
+                                            songs: PlayerManager.instance
+                                                .internalPlaylist.songs),
+                                    transitionsBuilder: (context, animation,
+                                        secondaryAnimation, child) {
+                                      const begin = Offset(0.0, 1.0);
+                                      const end = Offset.zero;
+                                      const curve = Curves.ease;
+
+                                      final tween =
+                                          Tween(begin: begin, end: end);
+                                      final curvedAnimation = CurvedAnimation(
+                                        parent: animation,
+                                        curve: curve,
+                                      );
+
+                                      return SlideTransition(
+                                        position:
+                                            tween.animate(curvedAnimation),
+                                        child: child,
+                                      );
+                                    }));
+                          },
+                          icon: Icon(Icons.playlist_play, size: 35,))
                     ],
-                  )),
-                  ValueListenableBuilder<ButtonState>(
-                    valueListenable: PlayerManager.instance.buttonNotifier,
-                    builder: (_, state, __) {
-                      switch (state){
-
-                        case ButtonState.paused:
-                          return IconButton(
-                              onPressed: () {
-                                _playerManager.play();
-                              },
-                              icon: Icon(Icons.play_circle_fill_rounded));
-                        case ButtonState.playing:
-                          return IconButton(
-                              onPressed: () {
-                                _playerManager.pause();
-                              },
-                              icon: Icon(Icons.pause_circle_filled_rounded));
-                        case ButtonState.loading:
-                          return Container(
-                            margin: const EdgeInsets.all(18.0),
-                            width: 20.0,
-                            height: 20.0,
-                            child: CircularProgressIndicator(
-                              color: ThemeNotifier().value.lightVibrantColor,
-                            ),
-                          );
-                      }
-                    },
-                  ),
-                  IconButton(
-                      onPressed: () {
-                        if (_playerManager.hasNextSongNotifier.value){
-                          _playerManager.onNextSongButtonPressed();
-                        }
-                      }, icon: const Icon(Icons.skip_next_rounded)),
-                  IconButton(onPressed: () {
-                    Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                            pageBuilder: (context, animation,
-                                secondaryAnimation) =>
-                                PlaylistDetailsScreen(playlistName: "Now Playing", songs: PlayerManager.instance.internalPlaylist.songs),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin = Offset(0.0, 1.0);
-                              const end = Offset.zero;
-                              const curve = Curves.ease;
-
-                              final tween =
-                              Tween(begin: begin, end: end);
-                              final curvedAnimation = CurvedAnimation(
-                                parent: animation,
-                                curve: curve,
-                              );
-
-                              return SlideTransition(
-                                position:
-                                tween.animate(curvedAnimation),
-                                child: child,
-                              );
-                            }));
-                  }, icon: Icon(Icons.playlist_play))
-                ],
-              ));
+                  ));
         },
       ),
     );

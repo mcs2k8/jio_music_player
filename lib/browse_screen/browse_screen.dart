@@ -10,18 +10,21 @@ import 'artist_list_widget.dart';
 import 'song_list_widget.dart';
 
 class BrowseScreen extends StatelessWidget {
-  final ThemeNotifier themeNotifier;
+  final ThemeNotifier themeNotifier = ThemeManager.instance.themeNotifier;
+  final int chosenTab;
 
   BrowseScreen({
+    this.chosenTab = 0,
     Key? key,
-    required this.themeNotifier,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: chosenTab,
         length: 4,
         child: Scaffold(
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               title: const Text('All Songs'),
               bottom: const TabBar(tabs: [
@@ -43,19 +46,20 @@ class BrowseScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context3) {
-                        return LocalSearchScreen(themeNotifier: themeNotifier);
+                        return LocalSearchScreen();
                       }));
                     },
                     icon: Icon(Icons.search)),
                 PopupMenuButton(
-                  onSelected: (value){
-                    print("selected $value");
-                    if (value == 2){
-                      Navigator.push(context, MaterialPageRoute(builder: (context4){
-                        return const SettingsScreen();
-                      }));
-                    }
-                  },
+                    onSelected: (value) async {
+                      print("selected $value");
+                      if (value == 2) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context4) {
+                          return const SettingsScreen();
+                        }));
+                      }
+                    },
                     color: ThemeManager
                         .instance.themeNotifier.value.darkVibrantColor,
                     itemBuilder: (context2) {
@@ -80,43 +84,47 @@ class BrowseScreen extends StatelessWidget {
                               ],
                             )),
                         PopupMenuItem(
-                          onTap: () {
-                            print("opening settings");
-                            // Navigator.push(context, MaterialPageRoute(builder: (context4){
-                            //   return const SettingsScreen();
-                            // }));
-                          },
+                            onTap: () {
+                              print("opening settings");
+                              // Navigator.push(context, MaterialPageRoute(builder: (context4){
+                              //   return const SettingsScreen();
+                              // }));
+                            },
                             value: 2,
                             child: Row(
-                          children: [
-                            const Icon(Icons.settings),
-                            const SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Settings",
-                              style: TextStyle(
-                                  color: ThemeManager.instance.themeNotifier
-                                      .value.lightMutedColor),
-                            )
-                          ],
-                        ))
+                              children: [
+                                const Icon(Icons.settings),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "Settings",
+                                  style: TextStyle(
+                                      color: ThemeManager.instance.themeNotifier
+                                          .value.lightMutedColor),
+                                )
+                              ],
+                            ))
                       ];
                     })
               ],
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
+            body: Stack(
+              alignment: Alignment.bottomCenter,
+              // mainAxisAlignment: MainAxisAlignment.start,
+              // mainAxisSize: MainAxisSize.max,
               children: [
-                const Expanded(
-                  flex: 4,
-                  child: TabBarView(children: [
-                    SongListWidget(),
-                    ArtistListWidget(),
-                    AlbumListWidget(),
-                    PlayListWidget()
-                  ]),
+                 Padding(
+                  padding: EdgeInsets.only(bottom: 60),
+                  child: Flex(direction: Axis.vertical, children: [Expanded(
+                    flex: 4,
+                    child: TabBarView(children: [
+                      SongListWidget(),
+                      ArtistListWidget(),
+                      AlbumListWidget(),
+                      PlayListWidget()
+                    ]),
+                  )],),
                 ),
                 PlayerStripe(
                   themeNotifier: themeNotifier,

@@ -68,11 +68,10 @@ class ArtistDetailsScreen extends StatelessWidget {
               flex: 4,
               child: TabBarView(children: [
                 MiniSongListWidget(
-                  themeNotifier: themeNotifier,
                   artist: artist.id.toString(),
                 ),
                 MiniAlbumListWidget(
-                  artistId: artist.id.toString(),
+                  artistId: artist.artist,
                 ),
               ]),
             ),
