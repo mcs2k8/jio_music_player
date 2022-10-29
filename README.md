@@ -3,6 +3,7 @@
 A free Music Player for the world.
 
 ##How it looks
+
 <img src="./screenshots/screen1.gif" width="250vh">
 <img src="./screenshots/screen2.gif" width="250vh">
 <img src="./screenshots/screen3.gif" width="250vh">
@@ -18,7 +19,10 @@ This software is published under the [GNU GENERAL PUBLIC LICENSE](./COPYING).
 The main thing I wanted with Jio was to make a hassle-free music player that can play local music. Once that was done, I wanted to be able to listen to free music. At that time I found out that it's possible to use the QQ, Netease, Kugou and Kuwo APIs to listen to songs for free. Thus, this app was slowly born.
 
 ## Work in Progress
-Please remember that this app is still largely a work in progress. I am once person working on this in my own spare time. If you like this app, I would appreciate any
+Please remember that this app is still largely a work in progress. I am once person working on this in my own spare time. If you like this app, I would appreciate any support you can give.
+
+## Support me
+###[Buy me a coffee🤗](https://www.buymeacoffee.com/alexanderg5)
 
 
 ## How the Icon is made
