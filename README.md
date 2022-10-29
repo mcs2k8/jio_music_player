@@ -2,11 +2,11 @@
 
 A free Music Player for the world.
 
-##How it looks
+<h2>How it looks</h2>
 
-<img src="./screenshots/screen1.gif" width="250vh">
-<img src="./screenshots/screen2.gif" width="250vh">
-<img src="./screenshots/screen3.gif" width="250vh">
+<img src="./screenshots/screen1.gif" width="30%">
+<img src="./screenshots/screen2.gif" width="30%">
+<img src="./screenshots/screen3.gif" width="30%">
 
 ## What is it?
 
