@@ -4,9 +4,9 @@ A free Music Player for the world.
 
 <h2>How it looks</h2>
 
-<img src="./screenshots/screen1.gif" width="30%">
+<span><img src="./screenshots/screen1.gif" width="30%">
 <img src="./screenshots/screen2.gif" width="30%">
-<img src="./screenshots/screen3.gif" width="30%">
+<img src="./screenshots/screen3.gif" width="30%"></span>
 
 ## What is it?
 
