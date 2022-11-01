@@ -23,7 +23,7 @@ Future<void> main() async {
         androidNotificationChannelName: 'Jio Music',
         notificationColor: ThemeManager.instance.themeNotifier.value.mutedColor,
       androidNotificationIcon: 'drawable/ic_stat_notification',
-        androidStopForegroundOnPause: false,
+      androidNotificationChannelDescription: 'Player music controls',
     ),
   );
   await OnAudioRoom().initRoom();

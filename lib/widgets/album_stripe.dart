@@ -59,6 +59,7 @@ class AlbumStripe extends StatelessWidget {
                       itemBuilder: (context, index) {
                         //4 properties: cover_img_url, title, id, source_url
                         // return EmptyCard(shouldOverlap: shouldOverlap);
+                        print("AlbumStripe:74: ${albums[index]['cover_img_url']}");
                         Widget column = Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -75,6 +76,7 @@ class AlbumStripe extends StatelessWidget {
                                   width: 90,
                                   height: 90,
                                   fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Image.asset('assets/vinyl.png', width: 90, height: 90, fit: BoxFit.cover,),
                                 ),) : ClipRRect(
                                     borderRadius: BorderRadius.circular(4.0),
                                     child: Image.network(
@@ -82,6 +84,7 @@ class AlbumStripe extends StatelessWidget {
                                       width: 120,
                                       height: 120,
                                       fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => Image.asset('assets/vinyl.png', width: 90, height: 90, fit: BoxFit.cover,),
                                     )),
                               ),
                             ),

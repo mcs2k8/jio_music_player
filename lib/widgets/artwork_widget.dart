@@ -30,7 +30,7 @@ class ArtworkWidget extends StatelessWidget {
           return ClipOval(
               child: SizedBox.fromSize(
                   size: Size.fromRadius(radius), // Image radius
-                  child: Image.network(snapshot.data as String)));
+                  child: Image.network(snapshot.data as String, errorBuilder: (_, __, ___) => Image.asset('assets/vinyl.png'),)));
         }
       },
     );
@@ -59,7 +59,7 @@ class SquareArtworkWidget extends StatelessWidget {
                   child: Image.asset('assets/vinyl.png')));
         } else {
           return ClipRect(
-              child: Flex(direction: Axis.horizontal, children: [Expanded(child: Image.network(snapshot.data as String, fit: BoxFit.cover,))],));
+              child: Flex(direction: Axis.horizontal, children: [Expanded(child: Image.network(snapshot.data as String, fit: BoxFit.cover, errorBuilder: (_, __, ___) => Image.asset('assets/vinyl.png', fit: BoxFit.cover,),))],));
         }
       },
     );
@@ -82,5 +82,6 @@ Future<String> getImageUrl(AudioModel? song) async {
   } else {
     img_url = imageUrl;
   }
+  print("ArtworkWidget:85: $img_url}");
   return img_url;
 }

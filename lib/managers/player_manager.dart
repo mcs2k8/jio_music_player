@@ -246,6 +246,7 @@ class PlayerManager extends BaseAudioHandler with QueueHandler, SeekHandler {
         ],
         systemActions: const {
           MediaAction.seek,
+          MediaAction.setRating
         },
         androidCompactActionIndices: const [0, 1, 3],
         processingState: const {
@@ -563,6 +564,7 @@ class PlayerManager extends BaseAudioHandler with QueueHandler, SeekHandler {
   @override
   Future<void> stop() async {
     //print("stop sent");
+    _audioPlayer.stop();
   }
 
   @override
@@ -824,6 +826,9 @@ class PlayerManager extends BaseAudioHandler with QueueHandler, SeekHandler {
         title: e.title,
         album: e.album,
         artist: e.artist,
+        displayTitle: e.title,
+        displaySubtitle: '${e.artist} - ${e.album}',
+        displayDescription: null,
         duration: Duration(milliseconds: e.duration ?? 0),
         artUri: artUri,
         artHeaders: {'time': Random().nextInt(2000).toString()},
@@ -903,6 +908,7 @@ class PlayerManager extends BaseAudioHandler with QueueHandler, SeekHandler {
     } else {
       img_url = imageUrl;
     }
+    print("PlayerManager:911: $img_url}");
     return img_url;
   }
 

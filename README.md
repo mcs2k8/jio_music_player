@@ -22,7 +22,7 @@ The main thing I wanted with Jio was to make a hassle-free music player that can
 Please remember that this app is still largely a work in progress. I am once person working on this in my own spare time. If you like this app, I would appreciate any support you can give.
 
 ## Support me
-###[Buy me a coffee🤗](https://www.buymeacoffee.com/alexanderg5)
+<h3><a href="https://www.buymeacoffee.com/alexanderg5">Buy me a coffee🤗</a></h3>
 
 
 ## How the Icon is made

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:wave/config.dart';
@@ -134,8 +136,7 @@ class CasetteAnimation extends StatelessWidget {
             double percentNotPlayed = (progress.total.inMilliseconds -
                     progress.current.inMilliseconds) /
                 progress.total.inMilliseconds;
-            double percentPlayed = (progress.current.inMilliseconds) /
-                progress.total.inMilliseconds;
+            if (percentNotPlayed.isNaN) percentNotPlayed = 0;
             return Padding(
                 padding: EdgeInsets.only(
                     bottom: 32.0,
@@ -146,7 +147,7 @@ class CasetteAnimation extends StatelessWidget {
                   child: ClipOval(
                     clipBehavior: Clip.hardEdge,
                     child: SizedBox.fromSize(
-                        size: Size.fromRadius(35 + percentNotPlayed * 40),
+                        size: Size.fromRadius(min(35 + percentNotPlayed * 40, 75)),
                         // Image radius
                         child: Image.asset('assets/casette-progress.png')),
                   ),
@@ -155,11 +156,9 @@ class CasetteAnimation extends StatelessWidget {
       ValueListenableBuilder<ProgressBarState>(
           valueListenable: PlayerManager.instance.progressNotifier,
           builder: (_, progress, __) {
-            double percentNotPlayed = (progress.total.inMilliseconds -
-                    progress.current.inMilliseconds) /
-                progress.total.inMilliseconds;
             double percentPlayed = (progress.current.inMilliseconds) /
                 progress.total.inMilliseconds;
+            if (percentPlayed.isNaN) percentPlayed = 0;
             return Padding(
                 padding: EdgeInsets.only(
                     bottom: 32.0,
@@ -170,7 +169,7 @@ class CasetteAnimation extends StatelessWidget {
                   child: ClipOval(
                     clipBehavior: Clip.hardEdge,
                     child: SizedBox.fromSize(
-                        size: Size.fromRadius(35 + percentPlayed*40),
+                        size: Size.fromRadius(min(35 + percentPlayed*40, 75)),
                         // Image radius
                         child: Image.asset('assets/casette-progress.png')),
                   ),
